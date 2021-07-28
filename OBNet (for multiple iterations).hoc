@@ -1,0 +1,85 @@
+
+
+xopen("$(NEURONHOME)/lib/hoc/noload.hoc") // standard run tools
+xopen("tabchannels.hoc")
+nrncontrolmenu()
+
+v_init  = -70    // to match pas 
+tstop   = 3000   // simulation time
+celsius = 35
+
+dt = 0.2      // simulation step
+
+steps_per_ms = 5  // For graphic display: 5 data points per ms
+secondorder  = 2  // Crank-Nicholson integration method
+
+
+
+xpanel("Auto launch menu")
+  xbutton("Default run 3000ms ", "default_run()")
+  xbutton("Short demo 30 ms","demo_run()")
+xpanel()
+
+magic=1
+
+load_file("Parameter.hoc")
+load_file("mathslib.hoc")
+load_file("MC_def.hoc") 
+load_file("PG_def.hoc")
+load_file("GC_def.hoc")             
+load_file("Connect.hoc")
+load_file("Background.hoc")
+load_file("Input.hoc")
+load_file("Figure.hoc")
+load_file("SaveData.hoc")
+
+
+
+
+proc advance() {
+fadvance()
+}
+
+proc run() {
+  running_ = 1
+  stdinit()
+  continuerun(tstop)
+}
+
+
+
+proc set_parameter(){
+	//magic=mi			//this to vary the concentrations in a single multiple iteration run.
+	load_file(1,"Input.hoc")	//change the value 2 in input file to mi as well when using
+}
+
+
+
+proc default_run(){
+  
+  tstop   = 3000    // Total simulation time: 3 sec
+  for mi = 1,25{
+	set_parameter() 
+	Fig_MC()
+	NetStim[0].seed(NSSEED)
+  	run()
+  	save_data(mi)
+	
+	}
+}
+
+
+
+proc demo_run() {
+  tstop   = 30    // Total simulation time: 0.03 sec
+  Fig_MC()  
+  NetStim[0].seed(NSSEED)
+  run()
+  save_data(0)
+}
+
+
+
+default_run()
+
+
