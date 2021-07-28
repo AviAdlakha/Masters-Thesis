@@ -1,0 +1,89 @@
+
+// Odor inputs to the 2D OB network
+// Odour inputs for Cineole
+
+objref MCinput[nmitx][nmity],  PGinput[npgx][npgy] 
+
+double pre_odor[nmitx][nmity], odor[nmitx][nmity]
+double IM[nmitx][nmity] 
+
+
+//===============================================================================
+//             Odor Inputs to MCs and PGCs 
+//===============================================================================
+
+outfile.wopen("input/OdorValue")  // Save odor input values to the file OdorValue
+
+double lines[25]
+
+lines[ 0 ]= 0.1
+lines[ 1 ]= 0.06
+lines[ 2 ]= 0.0575
+lines[ 3 ]= 0.06
+lines[ 4 ]= 0.1
+lines[ 5 ]= 0.08
+lines[ 6 ]= 0.2
+lines[ 7 ]= 0.1
+lines[ 8 ]= 0.2
+lines[ 9 ]= 0.08
+lines[ 10 ]= 0.1
+lines[ 11 ]= 0.06
+lines[ 12 ]= 0.08
+lines[ 13 ]= 0.12
+lines[ 14 ]= 0.1
+lines[ 15 ]= 0.16
+lines[ 16 ]= 0.04
+lines[ 17 ]= 0.08
+lines[ 18 ]= 0.04
+lines[ 19 ]= 0.16
+lines[ 20 ]= 0.08
+lines[ 21 ]= 0.16
+lines[ 22 ]= 0.16
+lines[ 23 ]= 0.16
+lines[ 24 ]= 0.08
+
+for i = 0, nmitx-1 { 
+   for j = 0, nmity-1 {  
+    n = i*nmity+j+1
+   
+    // MC inputs
+        mit[i][j].tuft MCinput[i][j] = new OdorInput(0.0)
+	MCinput[i][j].torn = Todor
+	MCinput[i][j].r    = RiseRate
+        MCinput[i][j].del  = 0
+        MCinput[i][j].dur  = tstop 
+ 	
+	f0 = (lines[n]*2)+0.1 //change the value 2 for different concentrations
+	f9 = (lines[n]*2)-0.1 //change the value 2 for different concentrations
+
+	u0 = ru.uniform(f0,f9)
+	u1 = u0
+
+	MCinput[i][j].f0 = u0
+	MCinput[i][j].f1 = u1
+	
+	pre_odor[i][j] = u0
+	odor[i][j]     = u1
+	
+	outfile.printf("Glom%d(%d,%d)  ",n,i,j)
+        outfile.printf("%5.4f ", u0)
+	outfile.printf(" %5.4f ",u1)
+        outfile.printf("\n")
+	
+    // PG inputs 
+	pg[i][j].gemmbody  PGinput[i][j] = new OdorInput(0.0)
+	PGinput[i][j].torn = Todor
+	PGinput[i][j].r    = RiseRate
+        PGinput[i][j].del  = 0
+        PGinput[i][j].dur  = tstop 
+  
+        PGinput[i][j].f0   = Km2p*u0 	
+	PGinput[i][j].f1   = Km2p*u1
+	
+  }
+}
+
+outfile.close()
+
+
+
